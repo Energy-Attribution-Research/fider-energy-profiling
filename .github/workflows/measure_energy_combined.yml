@@ -132,7 +132,7 @@ jobs:
       - name: Profile Build UI
         run: |
           $w3cTraceparent = "00-$((New-Guid).Guid.Replace('-',''))-$(((New-Guid).Guid.Replace('-','')).Substring(0,16))-01"
-          $profilerCap = 300
+          $profilerCap = 420
           $uprof = Start-Process -FilePath "$env:UPROF_PATH" -ArgumentList "timechart --event power --interval 100 -d $profilerCap -o `"$env:DATA_DIR\Build_UI\power_data.csv`"" -PassThru -WindowStyle Hidden
           Start-Sleep -Seconds 10
           $startTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
