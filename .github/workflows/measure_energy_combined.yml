@@ -265,6 +265,7 @@ jobs:
             -e JWT_SECRET="ci-secret-not-for-prod" `
             -e EMAIL="smtp" `
             -e EMAIL_NOREPLY="noreply@ci.local" `
+            -e BASE_URL="http://localhost:3000" `
             $env:GO_IMAGE sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
           Write-Host "Infrastructure ready."
         shell: powershell
@@ -299,6 +300,7 @@ jobs:
             -e JWT_SECRET="ci-secret-not-for-prod" `
             -e EMAIL="smtp" `
             -e EMAIL_NOREPLY="noreply@ci.local" `
+            -e BASE_URL="http://localhost:3000" `
             $env:GO_IMAGE sleep infinity | Select-Object -Last 1)
           $containerId = $containerId.Trim()
           if ([string]::IsNullOrWhiteSpace($containerId)) { throw "Failed to start persistent Go container" }
@@ -666,6 +668,7 @@ jobs:
             -e JWT_SECRET="ci-secret-not-for-prod" \
             -e EMAIL="smtp" \
             -e EMAIL_NOREPLY="noreply@ci.local" \
+            -e BASE_URL="http://localhost:3000" \
             "$GO_IMAGE" sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
           echo "Infrastructure ready."
         shell: bash
@@ -701,6 +704,7 @@ jobs:
             -e JWT_SECRET="ci-secret-not-for-prod" \
             -e EMAIL="smtp" \
             -e EMAIL_NOREPLY="noreply@ci.local" \
+            -e BASE_URL="http://localhost:3000" \
             "$GO_IMAGE" sleep infinity)
           CONTAINER_ID=$(echo "$CONTAINER_ID" | tr -d '[:space:]')
           if [ -z "$CONTAINER_ID" ]; then echo "Failed to start persistent Go container"; exit 1; fi
