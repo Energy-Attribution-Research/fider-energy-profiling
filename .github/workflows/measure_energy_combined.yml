@@ -263,6 +263,8 @@ jobs:
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user `
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
             -e JWT_SECRET="ci-secret-not-for-prod" `
+            -e EMAIL="smtp" `
+            -e EMAIL_NOREPLY="noreply@ci.local" `
             $env:GO_IMAGE sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
           Write-Host "Infrastructure ready."
         shell: powershell
@@ -294,6 +296,9 @@ jobs:
             -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-$env:RUN_ID`:9000" `
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user `
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
+            -e JWT_SECRET="ci-secret-not-for-prod" `
+            -e EMAIL="smtp" `
+            -e EMAIL_NOREPLY="noreply@ci.local" `
             $env:GO_IMAGE sleep infinity | Select-Object -Last 1)
           $containerId = $containerId.Trim()
           if ([string]::IsNullOrWhiteSpace($containerId)) { throw "Failed to start persistent Go container" }
@@ -659,6 +664,8 @@ jobs:
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user \
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
             -e JWT_SECRET="ci-secret-not-for-prod" \
+            -e EMAIL="smtp" \
+            -e EMAIL_NOREPLY="noreply@ci.local" \
             "$GO_IMAGE" sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
           echo "Infrastructure ready."
         shell: bash
@@ -691,6 +698,9 @@ jobs:
             -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-${RUN_ID}:9000" \
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user \
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
+            -e JWT_SECRET="ci-secret-not-for-prod" \
+            -e EMAIL="smtp" \
+            -e EMAIL_NOREPLY="noreply@ci.local" \
             "$GO_IMAGE" sleep infinity)
           CONTAINER_ID=$(echo "$CONTAINER_ID" | tr -d '[:space:]')
           if [ -z "$CONTAINER_ID" ]; then echo "Failed to start persistent Go container"; exit 1; fi
