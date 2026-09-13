@@ -182,12 +182,12 @@ jobs:
               [bool]$Calibration = $false
             )
             $startMs = [DateTimeOffset]::Now.ToUnixTimeMilliseconds()
-            $execArgs = @("exec", $containerId, "npx", "jest") + $JestArgs + @("--passWithNoTests")
+            $execArgs = @("exec", $containerId, "npm", "exec", "--", "jest") + $JestArgs + @("--passWithNoTests")
             & docker @execArgs
             $exitCode = $LASTEXITCODE
             $endMs = [DateTimeOffset]::Now.ToUnixTimeMilliseconds()
             if ($exitCode -ne 0 -and -not $Calibration) { $script:failedSpanCount += 1; Write-Warning "Span $Name exited $exitCode" }
-            $commandText = "npx jest " + ($JestArgs -join " ") + " --passWithNoTests"
+            $commandText = "npm exec -- jest " + ($JestArgs -join " ") + " --passWithNoTests"
             node scripts\make_pipeline_spans.js record `
               --output "$rawSpans" --name "$Name" --start-ms "$startMs" --end-ms "$endMs" `
               --exit-code "$exitCode" --test-path "$TestPath" --command "$commandText" `
@@ -262,6 +262,7 @@ jobs:
             -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-$env:RUN_ID`:9000" `
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user `
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
+            -e JWT_SECRET="ci-secret-not-for-prod" `
             $env:GO_IMAGE sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
           Write-Host "Infrastructure ready."
         shell: powershell
@@ -583,7 +584,7 @@ jobs:
             local start_ms end_ms exit_code
             start_ms=$(node -e "console.log(Date.now())")
             set +e
-            docker exec "$CONTAINER_ID" npx jest "$@" --passWithNoTests
+            docker exec "$CONTAINER_ID" npm exec -- jest "$@" --passWithNoTests
             exit_code=$?
             set -e
             end_ms=$(node -e "console.log(Date.now())")
@@ -593,12 +594,12 @@ jobs:
             fi
             node scripts/make_pipeline_spans.js record \
               --output "$RAW_SPANS" --name "$name" --start-ms "$start_ms" --end-ms "$end_ms" \
-              --exit-code "$exit_code" --test-path "$test_path" --command "npx jest $* --passWithNoTests" \
+              --exit-code "$exit_code" --test-path "$test_path" --command "npm exec -- jest $* --passWithNoTests" \
               --calibration "$calibration" --operation "jest-directory"
           }
 
           for REP in 1 2 3; do
-            run_ui_span "jest.Calibration.$REP" "true" "" --testPathPattern="^NO_MATCH$"
+            run_ui_span "jest.Calibration.$REP" "true" "" --testPathPatterns="^NO_MATCH$"
           done
 
           for DIR in components pages services; do
@@ -657,6 +658,7 @@ jobs:
             -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-${RUN_ID}:9000" \
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user \
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
+            -e JWT_SECRET="ci-secret-not-for-prod" \
             "$GO_IMAGE" sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
           echo "Infrastructure ready."
         shell: bash
