@@ -268,6 +268,7 @@ jobs:
               -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
               -e JWT_SECRET="ci-secret-not-for-prod" `
               -e EMAIL="smtp" `
+              -e EMAIL_SMTP_HOST="localhost" `
               -e EMAIL_NOREPLY="noreply@ci.local" `
               -e BASE_URL="http://localhost:3000" `
               $env:GO_IMAGE sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
@@ -308,6 +309,7 @@ jobs:
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
             -e JWT_SECRET="ci-secret-not-for-prod" `
             -e EMAIL="smtp" `
+            -e EMAIL_SMTP_HOST="localhost" `
             -e EMAIL_NOREPLY="noreply@ci.local" `
             -e BASE_URL="http://localhost:3000" `
             $env:GO_IMAGE sleep infinity | Select-Object -Last 1)
@@ -682,6 +684,7 @@ jobs:
               -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
               -e JWT_SECRET="ci-secret-not-for-prod" \
               -e EMAIL="smtp" \
+              -e EMAIL_SMTP_HOST="localhost" \
               -e EMAIL_NOREPLY="noreply@ci.local" \
               -e BASE_URL="http://localhost:3000" \
               "$GO_IMAGE" sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
@@ -725,6 +728,7 @@ jobs:
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
             -e JWT_SECRET="ci-secret-not-for-prod" \
             -e EMAIL="smtp" \
+            -e EMAIL_SMTP_HOST="localhost" \
             -e EMAIL_NOREPLY="noreply@ci.local" \
             -e BASE_URL="http://localhost:3000" \
             "$GO_IMAGE" sleep infinity)
