@@ -266,9 +266,11 @@ jobs:
               -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-$env:RUN_ID`:9000" `
               -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user `
               -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
+              -e BLOB_STORAGE_S3_BUCKET=ci-bucket `
               -e JWT_SECRET="ci-secret-not-for-prod" `
               -e EMAIL="smtp" `
               -e EMAIL_SMTP_HOST="localhost" `
+              -e EMAIL_SMTP_PORT=1025 `
               -e EMAIL_NOREPLY="noreply@ci.local" `
               -e BASE_URL="http://localhost:3000" `
               $env:GO_IMAGE sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
@@ -307,9 +309,11 @@ jobs:
             -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-$env:RUN_ID`:9000" `
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user `
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
+            -e BLOB_STORAGE_S3_BUCKET=ci-bucket `
             -e JWT_SECRET="ci-secret-not-for-prod" `
             -e EMAIL="smtp" `
             -e EMAIL_SMTP_HOST="localhost" `
+            -e EMAIL_SMTP_PORT=1025 `
             -e EMAIL_NOREPLY="noreply@ci.local" `
             -e BASE_URL="http://localhost:3000" `
             $env:GO_IMAGE sleep infinity | Select-Object -Last 1)
@@ -682,9 +686,11 @@ jobs:
               -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-${RUN_ID}:9000" \
               -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user \
               -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
+              -e BLOB_STORAGE_S3_BUCKET=ci-bucket \
               -e JWT_SECRET="ci-secret-not-for-prod" \
               -e EMAIL="smtp" \
               -e EMAIL_SMTP_HOST="localhost" \
+              -e EMAIL_SMTP_PORT=1025 \
               -e EMAIL_NOREPLY="noreply@ci.local" \
               -e BASE_URL="http://localhost:3000" \
               "$GO_IMAGE" sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
@@ -726,9 +732,11 @@ jobs:
             -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-${RUN_ID}:9000" \
             -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user \
             -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
+            -e BLOB_STORAGE_S3_BUCKET=ci-bucket \
             -e JWT_SECRET="ci-secret-not-for-prod" \
             -e EMAIL="smtp" \
             -e EMAIL_SMTP_HOST="localhost" \
+            -e EMAIL_SMTP_PORT=1025 \
             -e EMAIL_NOREPLY="noreply@ci.local" \
             -e BASE_URL="http://localhost:3000" \
             "$GO_IMAGE" sleep infinity)
