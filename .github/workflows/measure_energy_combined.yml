@@ -663,23 +663,35 @@ jobs:
             getfider/minio:0.0.2 server /data
 
           echo "Waiting for PostgreSQL..."
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             docker exec "fider-pgtest-${RUN_ID}" pg_isready -U fider_ci && break || sleep 2
           done
-          docker exec "fider-pgtest-${RUN_ID}" pg_isready -U fider_ci || { echo "ERROR: PostgreSQL did not become ready in time"; exit 1; }
+          docker exec "fider-pgtest-${RUN_ID}" pg_isready -U fider_ci || { echo "ERROR: PostgreSQL did not become ready within 120s"; exit 1; }
 
           echo "Pre-warming Go module cache, building binary, and running migrations..."
-          docker run --rm --network "$NET_NAME" -v "${PWD}:/app" -w /app --platform linux/arm64 \
-            -v "fider-gomod-${RUN_ID}:/root/go/pkg/mod" \
-            -e DATABASE_URL="postgres://fider_ci:fider_ci_pw@fider-pgtest-${RUN_ID}:5432/fider_ci?sslmode=disable" \
-            -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-${RUN_ID}:9000" \
-            -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user \
-            -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
-            -e JWT_SECRET="ci-secret-not-for-prod" \
-            -e EMAIL="smtp" \
-            -e EMAIL_NOREPLY="noreply@ci.local" \
-            -e BASE_URL="http://localhost:3000" \
-            "$GO_IMAGE" sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
+          MAX_RETRIES=2
+          PREWARM_SUCCESS=false
+          for attempt in $(seq 1 $MAX_RETRIES); do
+            echo "Pre-warm attempt $attempt of $MAX_RETRIES..."
+            set +e
+            docker run --rm --network "$NET_NAME" -v "${PWD}:/app" -w /app --platform linux/arm64 \
+              -v "fider-gomod-${RUN_ID}:/root/go/pkg/mod" \
+              -e DATABASE_URL="postgres://fider_ci:fider_ci_pw@fider-pgtest-${RUN_ID}:5432/fider_ci?sslmode=disable" \
+              -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-${RUN_ID}:9000" \
+              -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user \
+              -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t \
+              -e JWT_SECRET="ci-secret-not-for-prod" \
+              -e EMAIL="smtp" \
+              -e EMAIL_NOREPLY="noreply@ci.local" \
+              -e BASE_URL="http://localhost:3000" \
+              "$GO_IMAGE" sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
+            PREWARM_EXIT=$?
+            set -e
+            if [ $PREWARM_EXIT -eq 0 ]; then PREWARM_SUCCESS=true; break; fi
+            echo "WARNING: Pre-warm attempt $attempt failed (exit $PREWARM_EXIT)."
+            if [ $attempt -lt $MAX_RETRIES ]; then echo "Waiting 15s before retry..."; sleep 15; fi
+          done
+          if [ "$PREWARM_SUCCESS" != "true" ]; then echo "ERROR: Pre-warm failed after $MAX_RETRIES attempts."; exit 1; fi
           echo "Infrastructure ready."
         shell: bash
 
