@@ -256,17 +256,26 @@ jobs:
 
           Write-Host "Pre-warming Go module cache, building binary, and running migrations..."
           $dbUrl = "postgres://fider_ci:fider_ci_pw@fider-pgtest-$env:RUN_ID`:5432/fider_ci?sslmode=disable"
-          docker run --rm --network $netName -v "${PWD}:/app" -w /app --platform linux/amd64 `
-            -v "fider-gomod-$env:RUN_ID`:/root/go/pkg/mod" `
-            -e DATABASE_URL=$dbUrl `
-            -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-$env:RUN_ID`:9000" `
-            -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user `
-            -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
-            -e JWT_SECRET="ci-secret-not-for-prod" `
-            -e EMAIL="smtp" `
-            -e EMAIL_NOREPLY="noreply@ci.local" `
-            -e BASE_URL="http://localhost:3000" `
-            $env:GO_IMAGE sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
+          $maxRetries = 2
+          $preWarmSuccess = $false
+          for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+            Write-Host "Pre-warm attempt $attempt of $maxRetries..."
+            docker run --rm --network $netName -v "${PWD}:/app" -w /app --platform linux/amd64 `
+              -v "fider-gomod-$env:RUN_ID`:/root/go/pkg/mod" `
+              -e DATABASE_URL=$dbUrl `
+              -e BLOB_STORAGE_S3_ENDPOINT_URL="http://fider-s3test-$env:RUN_ID`:9000" `
+              -e BLOB_STORAGE_S3_ACCESS_KEY_ID=s3user `
+              -e BLOB_STORAGE_S3_SECRET_ACCESS_KEY=s3user-s3cr3t `
+              -e JWT_SECRET="ci-secret-not-for-prod" `
+              -e EMAIL="smtp" `
+              -e EMAIL_NOREPLY="noreply@ci.local" `
+              -e BASE_URL="http://localhost:3000" `
+              $env:GO_IMAGE sh -c "go mod download && mkdir -p dist && go build -ldflags '-s -w' -o fider . && ./fider migrate"
+            if ($LASTEXITCODE -eq 0) { $preWarmSuccess = $true; break }
+            Write-Warning "Pre-warm attempt $attempt failed (exit $LASTEXITCODE)."
+            if ($attempt -lt $maxRetries) { Write-Host "Waiting 15s before retry..."; Start-Sleep -Seconds 15 }
+          }
+          if (-not $preWarmSuccess) { throw "Pre-warm failed after $maxRetries attempts. See logs above." }
           Write-Host "Infrastructure ready."
         shell: powershell
 
@@ -657,6 +666,7 @@ jobs:
           for i in $(seq 1 30); do
             docker exec "fider-pgtest-${RUN_ID}" pg_isready -U fider_ci && break || sleep 2
           done
+          docker exec "fider-pgtest-${RUN_ID}" pg_isready -U fider_ci || { echo "ERROR: PostgreSQL did not become ready in time"; exit 1; }
 
           echo "Pre-warming Go module cache, building binary, and running migrations..."
           docker run --rm --network "$NET_NAME" -v "${PWD}:/app" -w /app --platform linux/arm64 \
