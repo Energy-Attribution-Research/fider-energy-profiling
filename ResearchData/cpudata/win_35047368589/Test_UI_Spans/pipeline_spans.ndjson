@@ -1,0 +1,3 @@
+{"name":"jest.Calibration.1","start_time_ms":1789535682219,"end_time_ms":1789535726012,"exit_code":0,"test_path":"","command":"npm exec -- jest --testPathPattern=^NO_MATCH$ --passWithNoTests","calibration":true,"operation":"jest-directory"}
+{"name":"jest.Calibration.2","start_time_ms":1789535726112,"end_time_ms":1789535759152,"exit_code":0,"test_path":"","command":"npm exec -- jest --testPathPattern=^NO_MATCH$ --passWithNoTests","calibration":true,"operation":"jest-directory"}
+{"name":"jest.Calibration.3","start_time_ms":1789535759239,"end_time_ms":1789535792620,"exit_code":0,"test_path":"","command":"npm exec -- jest --testPathPattern=^NO_MATCH$ --passWithNoTests","calibration":true,"operation":"jest-directory"}

@@ -1,0 +1,92 @@
+[
+  {
+    "span_id": "ee7458bc9788bbcd",
+    "trace_id": "dcebcf35dc604e2ea579a6299b092e63",
+    "name": "jest.Calibration.1",
+    "start_time_ms": 1790135087666,
+    "end_time_ms": 1790135130987,
+    "duration_ms": 43321,
+    "attributes": {
+      "ci.operation": "jest-directory",
+      "ci.test_path": "",
+      "ci.command": "npm exec -- jest --testPathPattern=^NO_MATCH$ --passWithNoTests",
+      "ci.exit_code": 0,
+      "ci.calibration": true
+    }
+  },
+  {
+    "span_id": "80551c4c6e91047d",
+    "trace_id": "dcebcf35dc604e2ea579a6299b092e63",
+    "name": "jest.Calibration.2",
+    "start_time_ms": 1790135131233,
+    "end_time_ms": 1790135165678,
+    "duration_ms": 34445,
+    "attributes": {
+      "ci.operation": "jest-directory",
+      "ci.test_path": "",
+      "ci.command": "npm exec -- jest --testPathPattern=^NO_MATCH$ --passWithNoTests",
+      "ci.exit_code": 0,
+      "ci.calibration": true
+    }
+  },
+  {
+    "span_id": "65204aade8bd4e51",
+    "trace_id": "dcebcf35dc604e2ea579a6299b092e63",
+    "name": "jest.Calibration.3",
+    "start_time_ms": 1790135165765,
+    "end_time_ms": 1790135198339,
+    "duration_ms": 32574,
+    "attributes": {
+      "ci.operation": "jest-directory",
+      "ci.test_path": "",
+      "ci.command": "npm exec -- jest --testPathPattern=^NO_MATCH$ --passWithNoTests",
+      "ci.exit_code": 0,
+      "ci.calibration": true
+    }
+  },
+  {
+    "span_id": "4e69d2ce842c32f4",
+    "trace_id": "dcebcf35dc604e2ea579a6299b092e63",
+    "name": "jest.components",
+    "start_time_ms": 1790135198426,
+    "end_time_ms": 1790135352001,
+    "duration_ms": 153575,
+    "attributes": {
+      "ci.operation": "jest-directory",
+      "ci.test_path": "public/components",
+      "ci.command": "npm exec -- jest ./public/components --passWithNoTests",
+      "ci.exit_code": 0,
+      "ci.calibration": false
+    }
+  },
+  {
+    "span_id": "2ea3987ca763da9b",
+    "trace_id": "dcebcf35dc604e2ea579a6299b092e63",
+    "name": "jest.pages",
+    "start_time_ms": 1790135352090,
+    "end_time_ms": 1790135559188,
+    "duration_ms": 207098,
+    "attributes": {
+      "ci.operation": "jest-directory",
+      "ci.test_path": "public/pages",
+      "ci.command": "npm exec -- jest ./public/pages --passWithNoTests",
+      "ci.exit_code": 0,
+      "ci.calibration": false
+    }
+  },
+  {
+    "span_id": "2f56416e87cc3dee",
+    "trace_id": "dcebcf35dc604e2ea579a6299b092e63",
+    "name": "jest.services",
+    "start_time_ms": 1790135559413,
+    "end_time_ms": 1790135693186,
+    "duration_ms": 133773,
+    "attributes": {
+      "ci.operation": "jest-directory",
+      "ci.test_path": "public/services",
+      "ci.command": "npm exec -- jest ./public/services --passWithNoTests",
+      "ci.exit_code": 0,
+      "ci.calibration": false
+    }
+  }
+]
